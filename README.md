@@ -16,13 +16,13 @@ Some of the security practices I have followed:
 
 - I have used base image SHA as a peice of evidence.
 
--I have use mutli stage DockerFile, In base stage it install production dependencies in seperate folder which in used the in the next stage(avoided dev dependencies).
+- I have use mutli stage DockerFile, In base stage it install production dependencies in seperate folder which in used the in the next stage(avoided dev dependencies).
 
--Used User `node` which is available in the  base image.
+- Used User `node` which is available in the  base image.
 
--Removed package manager from the image.
+- Removed package manager from the image.
 
--Used to run the server with `dumb-init`.
+- Used to run the server with `dumb-init`.
 
 ### Kubernetes Manifest
 
@@ -68,7 +68,14 @@ Open http://localhost:8081/
 
 Created Github Workflow which contain a common job for,
 
--Building the image
--Push the image to ECR
--Deploy the application with the new image.
--Rollout all pods.
+- Building the image
+- Push the image to ECR
+- Deploy the application with the new image.
+- Rollout all pods.
+
+### Future Improvements
+
+- Configure the mongo cluster to use TLS only.
+- User seperate user  and database for each service(todo-app) in mongo cluster.
+- Can use hashicorp vault for dynamic secret generation.
+
