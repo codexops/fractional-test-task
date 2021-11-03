@@ -1,0 +1,54 @@
+name: Build, Push and Deploy todo app with Mongo Cluster
+
+on:
+ push:
+    branches: [ master ]
+
+jobs:
+ 
+ setup-build-publish-deploy:
+
+   name: Setup, Build, Publish, and Deploy to K8s Cluster
+   runs-on: ubuntu-latest
+
+   steps:
+
+   - name: Check out code
+     uses: actions/checkout@v2
+   
+   - name: Configure AWS credentials
+     uses: aws-actions/configure-aws-credentials@v1
+     with:
+       aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+       aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+       aws-region: us-south-1
+
+   - name: Login to Amazon ECR
+     id: login-ecr
+     uses: aws-actions/amazon-ecr-login@v1
+
+   - name: Get Time
+     id: time
+     uses: nanzm/get-time-action@v1.1
+     with:
+       timeZone: 8
+       format: 'YYYY-MM-DD-HH-mm-ss'
+
+   - name: Build, tag, and push image to Amazon ECR
+     env:
+       ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+       ECR_REPOSITORY: todo-app-${GITHUB_REF##*/}
+       IMAGE_TAG:  ${{ github.sha }}-"${{ steps.time.outputs.time }}"
+     run: |
+       docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+       docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+       sed -i "/image\:/c\        image: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" k8s/todo-app/todo-app-deployment.yaml
+
+   - name: Deployment in EKS Cluster
+     uses: koslib/helm-eks-action@master
+     env:
+       KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+     with:
+       command: kubectl apply -f k8s/todo-app/ && \
+                kubectl rollout restart  deployment todo-app

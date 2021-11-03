@@ -80,6 +80,8 @@ Created Github Workflow which contain a common job for,
 - Deploy the application with the new image.
 - Rollout all pods.
 
+`Note: Before running pipeline please add required secrets in the Repo.`
+
 ### Future Improvements
 
 - Configure the mongo cluster to use TLS only.
