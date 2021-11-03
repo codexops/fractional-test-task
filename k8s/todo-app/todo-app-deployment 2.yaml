@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    component: todo-app
+    app: todo
+  name: todo-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: todo-app
+      app: todo
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        component: todo-app
+        app: todo
+    spec:
+      containers:
+        - image: todo-app:v1.0.0
+          name: todo-app
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - secretRef:
+                name: todo-app-secrets
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+            limits:
+              cpu: 200m
+              memory: 200Mi
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 10
+          securityContext:
+            readOnlyRootFilesystem: true
+      restartPolicy: Always
