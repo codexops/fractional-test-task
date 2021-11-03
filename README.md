@@ -7,9 +7,16 @@
 - AWS credentials ( ACCESS_ID and SECRET_KEY ) for EKS access
 
 ## Overview
+Infrastructure provisioning
 Containerization of node application
 Orchestration( Deployent in Kubernetes cluster)
 Github workflow for CI/CD
+
+### Terraform
+
+Infrastructure on AWS has been created with terraform.
+
+For more details please refer ../terraform/README.md
 
 ### Dockerfile
 Some of the security practices I have followed:
