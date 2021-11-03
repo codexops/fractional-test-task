@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    component: todo-app
+  name: todo-app
+spec:
+  ports:
+    - name: todo
+      port: 8080
+      targetPort: 8080
+  selector:
+    component: todo-app
+status:
+  loadBalancer: {}
